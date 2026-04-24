@@ -39,21 +39,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.login({ email, password });
       const { token, role, hasMembership, plan, membershipStatus } = response.data;
-      
-      // Store in localStorage
+
       localStorage.setItem('token', token);
       localStorage.setItem('userRole', role);
       localStorage.setItem('hasMembership', hasMembership);
-      
-      // Update state
+
+
       setToken(token);
       setRole(role);
       setHasMembership(hasMembership);
       setPlan(plan);
-      
+
       toast.success('Login successful!');
-      
-      // Return the data so component can use it
+
       return { role, hasMembership };
     } catch (error) {
       throw error;

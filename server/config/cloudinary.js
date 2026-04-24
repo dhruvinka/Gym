@@ -4,9 +4,9 @@ const multer = require('multer');
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dgbiowyya',
-  api_key: process.env.CLOUDINARY_API_KEY || '168363752888946',
-  api_secret: process.env.CLOUDINARY_API_SECRET || 'NeBgHqnjSk76OiUW4QqvKG0STgU'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 // Configure storage for member profile photos

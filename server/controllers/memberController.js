@@ -1,28 +1,28 @@
 const memberService = require("../services/memberService");
 const MemberProfile = require("../models/MemberProfile");
 const Payment = require("../models/Payment");
-const TrainerProfile = require("../models/TrainerProfile"); // ✅ ADD THIS
+const TrainerProfile = require("../models/TrainerProfile");
 
 // GET MY TRAINER
 exports.getMyTrainer = async (req, res, next) => {
   try {
     const member = await MemberProfile.findOne({ userId: req.user.id });
-    
+
     if (!member) {
       return res.status(404).json({ message: "Member profile not found" });
     }
 
     // Check if premium member
     if (member.plan !== "PREMIUM") {
-      return res.status(403).json({ 
-        message: "Trainer assignment is only for PREMIUM members" 
+      return res.status(403).json({
+        message: "Trainer assignment is only for PREMIUM members"
       });
     }
 
     // Get assigned trainer
     if (!member.assignedTrainerId) {
-      return res.status(404).json({ 
-        message: "No trainer assigned yet" 
+      return res.status(404).json({
+        message: "No trainer assigned yet"
       });
     }
 
@@ -30,8 +30,8 @@ exports.getMyTrainer = async (req, res, next) => {
       .populate("userId", "name email");
 
     if (!trainer) {
-      return res.status(404).json({ 
-        message: "Trainer not found" 
+      return res.status(404).json({
+        message: "Trainer not found"
       });
     }
 
@@ -50,7 +50,8 @@ exports.getMyTrainer = async (req, res, next) => {
         name: trainer.userId?.name,
         specialization: trainer.specialization,
         experience: trainer.experience,
-        email: trainer.userId?.email
+        email: trainer.userId?.email,
+        profilePhoto: trainer.profilePhoto
       },
       timeSlot: member.timeSlot,
       timeSlotLabel: slotLabels[member.timeSlot],
@@ -93,7 +94,7 @@ exports.getSubscription = async (req, res, next) => {
     const subscription = await MemberProfile.findOne({
       userId: req.user.id
     });
-    
+
     if (subscription && subscription.plan === "PREMIUM" && subscription.timeSlot) {
       const slotLabels = {
         MORNING_5_7: "Morning 5:00 AM - 7:00 AM",

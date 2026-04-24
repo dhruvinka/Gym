@@ -143,23 +143,7 @@ function MyDietPlan() {
           </div>
         </div>
 
-        {/* Trainer Info */}
-        {currentPlan?.trainerId && (
-          <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg p-6 mb-8 text-white">
-            <div className="flex items-center gap-4">
-              <div className="bg-white bg-opacity-20 p-4 rounded-full">
-                <FiUser className="text-3xl" />
-              </div>
-              <div>
-                <p className="text-sm opacity-90">Your Trainer</p>
-                <h3 className="text-2xl font-bold">
-                  {currentPlan.trainerId.userId?.name || 'Trainer'}
-                </h3>
-                <p className="text-sm opacity-90">{currentPlan.trainerId.specialization}</p>
-              </div>
-            </div>
-          </div>
-        )}
+
 
         {/* Week Info */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">

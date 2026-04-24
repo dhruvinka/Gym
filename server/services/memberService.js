@@ -3,7 +3,6 @@ const TrainerProfile = require("../models/TrainerProfile");
 const DietPlan = require("../models/DietPlan");
 
 // GET MEMBER PROFILE
-// GET MEMBER PROFILE
 exports.getProfile = async (userId) => {
   const member = await MemberProfile.findOne({ userId })
     .populate("userId")
@@ -25,7 +24,7 @@ exports.getProfile = async (userId) => {
   return member;
 };
 
-// GET MY SCHEDULE (premium only)
+// GET MY SCHEDULE
 exports.getMySchedule = async (userId) => {
   const member = await MemberProfile.findOne({ userId });
   if (!member) throw new Error("Member profile not found");
@@ -53,7 +52,9 @@ exports.getMySchedule = async (userId) => {
   return {
     trainer: {
       name: trainer?.userId?.name,
-      specialization: trainer?.specialization
+      specialization: trainer?.specialization,
+      experience: trainer?.experience,
+      profilePhoto: trainer?.profilePhoto
     },
     timeSlot: member.timeSlot,
     timeSlotLabel: slotLabels[member.timeSlot],
@@ -62,7 +63,7 @@ exports.getMySchedule = async (userId) => {
   };
 };
 
-// GET DIET PLAN (premium only)
+// GET DIET PLAN
 exports.getDietPlan = async (userId) => {
   const member = await MemberProfile.findOne({ userId });
   if (!member) throw new Error("Member profile not found");

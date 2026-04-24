@@ -92,7 +92,7 @@ function MySchedule() {
             <FiAlertCircle className="text-6xl text-yellow-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-800 mb-2">No Schedule Available</h2>
             <p className="text-gray-600 mb-4">
-              {memberInfo?.plan !== 'PREMIUM' 
+              {memberInfo?.plan !== 'PREMIUM'
                 ? 'Schedules are only available for Premium members with assigned trainers.'
                 : 'You don\'t have a trainer assigned yet.'}
             </p>
@@ -129,8 +129,18 @@ function MySchedule() {
         {/* Trainer Info Card */}
         <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg shadow-lg p-6 mb-8 text-white">
           <div className="flex items-center gap-4">
-            <div className="bg-white bg-opacity-20 p-4 rounded-full">
-              <FiUser className="text-3xl" />
+            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white border-opacity-50 flex-shrink-0">
+              {schedule.trainer?.profilePhoto?.url ? (
+                <img
+                  src={schedule.trainer.profilePhoto.url}
+                  alt={schedule.trainer?.name || 'Trainer'}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-white bg-opacity-20 flex items-center justify-center">
+                  <FiUser className="text-2xl text-white" />
+                </div>
+              )}
             </div>
             <div className="flex-1">
               <p className="text-sm opacity-90">Your Personal Trainer</p>
@@ -150,14 +160,14 @@ function MySchedule() {
             <FiClock className="text-yellow-400" />
             Your Assigned Time Slot
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-gray-50 rounded-lg p-6 text-center">
               <span className="text-5xl mb-2 block">{currentSlot.icon}</span>
               <h3 className="text-lg font-semibold text-gray-800">{currentSlot.label}</h3>
               <p className="text-yellow-400 font-medium mt-2">{currentSlot.time}</p>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
@@ -168,7 +178,7 @@ function MySchedule() {
                   <p className="font-medium">{currentSlot.intensity}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                   <FiCalendar className="text-blue-600" />
@@ -193,11 +203,10 @@ function MySchedule() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {daysOfWeek.map((day, index) => (
-              <div 
-                key={day} 
-                className={`border rounded-lg p-4 ${
-                  index < 5 ? 'bg-white' : 'bg-yellow-50'
-                }`}
+              <div
+                key={day}
+                className={`border rounded-lg p-4 ${index < 5 ? 'bg-white' : 'bg-yellow-50'
+                  }`}
               >
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-semibold text-gray-800">{day}</h3>
@@ -211,7 +220,7 @@ function MySchedule() {
                     </span>
                   )}
                 </div>
-                
+
                 {index < 5 ? (
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600 flex items-center gap-1">

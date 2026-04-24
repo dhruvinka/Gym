@@ -16,7 +16,7 @@ exports.updateTrainerProfile = async (userId, data) => {
   );
 };
 
-// GET MY SCHEDULES (now returns slot information)
+// GET MY SCHEDULES 
 exports.getTrainerSchedules = async (userId) => {
   const trainer = await TrainerProfile.findOne({ userId });
   if (!trainer) throw new Error("Trainer profile not found");
@@ -34,7 +34,7 @@ exports.getTrainerSchedules = async (userId) => {
   return slots;
 };
 
-// GET ASSIGNED MEMBERS (only premium members)
+// GET ASSIGNED MEMBERS
 exports.getAssignedMembers = async (userId) => {
   const trainer = await TrainerProfile.findOne({ userId });
   if (!trainer) throw new Error("Trainer profile not found");
@@ -49,7 +49,7 @@ exports.getAssignedMembers = async (userId) => {
   return members;
 };
 
-// CREATE DIET PLAN (Only for assigned premium members)
+// CREATE DIET PLAN
 exports.createDietPlan = async (trainerProfileId, data) => {
   // Verify member is assigned to this trainer
   const member = await MemberProfile.findOne({

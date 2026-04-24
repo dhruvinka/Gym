@@ -13,7 +13,6 @@ const trainerProfileSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
-    // Profile photo
     profilePhoto: {
       url: { type: String, default: '' },
       publicId: { type: String, default: '' }

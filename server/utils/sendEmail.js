@@ -12,7 +12,7 @@ const sendEmail = async (email, subject, message) => {
   });
 
   const info = await transporter.sendMail({
-    from: '"TITAN FIT" <kdhruvin4@gmail.com>', // verified sender
+    from: '"TITAN FIT" <kdhruvin4@gmail.com>',
     to: email,
     subject,
     text: message

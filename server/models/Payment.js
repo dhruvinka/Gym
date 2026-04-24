@@ -8,7 +8,6 @@ const paymentSchema = new mongoose.Schema(
       required: true
     },
 
-    // NEW: Plan stored as string instead of ObjectId
     plan: {
       type: String,
       enum: ["SIMPLE", "PREMIUM"],

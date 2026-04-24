@@ -23,10 +23,10 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const { role, hasMembership } = await login(formData.email, formData.password);
-      
+
       if (role === 'ADMIN') {
         navigate('/admin/dashboard');
       } else if (role === 'TRAINER') {
@@ -54,16 +54,12 @@ function Login() {
         backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')"
       }}
     >
-      {/* Dark overlay gradient for better readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/50"></div>
-      
-      {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black to-transparent"></div>
       <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black to-transparent"></div>
-      
-      
+
+
       <div className="max-w-md w-full space-y-8 bg-white/95 backdrop-blur-sm p-10 rounded-2xl shadow-2xl relative z-10 mx-4 transform transition-all duration-500 hover:scale-105">
-        {/* Gym Logo/Brand */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
           </div>
@@ -134,8 +130,8 @@ function Login() {
             </div>
 
             <div className="text-sm">
-              <Link 
-                to="/forgot-password" 
+              <Link
+                to="/forgot-password"
                 state={{ email: formData.email }}
                 className="font-medium text-yellow-400 hover:text-yellow-500 transition-colors duration-200"
               >
@@ -172,15 +168,11 @@ function Login() {
           </div>
         </form>
 
-        {/* Motivational Quote */}
         <div className="text-center text-sm text-gray-500 italic border-t pt-4">
           "The only bad workout is the one that didn't happen."
         </div>
 
-        {/* Demo credentials (for testing) - REMOVE IN PRODUCTION */}
-        <div className="text-center text-xs text-gray-400">
-          <p>Demo: admin@gym.com / trainer@gym.com / member@gym.com</p>
-        </div>
+
       </div>
     </div>
   );

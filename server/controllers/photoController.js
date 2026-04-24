@@ -10,7 +10,7 @@ exports.uploadMemberPhoto = async (req, res, next) => {
     }
 
     const member = await MemberProfile.findOne({ userId: req.user.id });
-    
+
     if (!member) {
       return res.status(404).json({ message: "Member profile not found" });
     }
@@ -45,7 +45,7 @@ exports.uploadTrainerPhoto = async (req, res, next) => {
     }
 
     const trainer = await TrainerProfile.findOne({ userId: req.user.id });
-    
+
     if (!trainer) {
       return res.status(404).json({ message: "Trainer profile not found" });
     }
@@ -60,6 +60,7 @@ exports.uploadTrainerPhoto = async (req, res, next) => {
       url: req.file.path,
       publicId: req.file.filename
     };
+
     await trainer.save();
 
     res.json({
@@ -76,14 +77,14 @@ exports.uploadTrainerPhoto = async (req, res, next) => {
 exports.deleteMemberPhoto = async (req, res, next) => {
   try {
     const member = await MemberProfile.findOne({ userId: req.user.id });
-    
+
     if (!member) {
       return res.status(404).json({ message: "Member profile not found" });
     }
 
     if (member.profilePhoto?.publicId) {
       await cloudinary.uploader.destroy(member.profilePhoto.publicId);
-      
+
       member.profilePhoto = { url: '', publicId: '' };
       await member.save();
     }
@@ -99,14 +100,14 @@ exports.deleteMemberPhoto = async (req, res, next) => {
 exports.deleteTrainerPhoto = async (req, res, next) => {
   try {
     const trainer = await TrainerProfile.findOne({ userId: req.user.id });
-    
+
     if (!trainer) {
       return res.status(404).json({ message: "Trainer profile not found" });
     }
 
     if (trainer.profilePhoto?.publicId) {
       await cloudinary.uploader.destroy(trainer.profilePhoto.publicId);
-      
+
       trainer.profilePhoto = { url: '', publicId: '' };
       await trainer.save();
     }

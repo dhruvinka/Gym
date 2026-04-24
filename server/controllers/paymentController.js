@@ -101,13 +101,12 @@ exports.verifyPayment = async (req, res, next) => {
       razorpay_payment_id,
       razorpay_signature,
       plan,
-      timeSlot,
-      selectedTrainerId  // Optional trainer selection
+      timeSlot
     } = req.body;
 
-    console.log("Verifying payment:", { razorpay_order_id, plan, timeSlot, selectedTrainerId });
+    console.log("Verifying payment:", { razorpay_order_id, plan, timeSlot });
 
-    // 1️⃣ Verify payment signature
+    //  Verify payment signature
     const body = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -120,7 +119,7 @@ exports.verifyPayment = async (req, res, next) => {
       });
     }
 
-    // 2️⃣ Validate plan
+    // Validate plan
     if (!plans[plan]) {
       return res.status(400).json({
         message: "Invalid plan"
@@ -129,7 +128,7 @@ exports.verifyPayment = async (req, res, next) => {
 
     const selectedPlan = plans[plan];
 
-    // 3️⃣ Validate time slot for premium members
+    //  Validate time slot for premium members
     if (plan === "PREMIUM") {
       if (!timeSlot) {
         return res.status(400).json({
@@ -144,7 +143,7 @@ exports.verifyPayment = async (req, res, next) => {
       }
     }
 
-    // 4️⃣ Save payment record
+    // Save payment record
     const payment = await Payment.create({
       userId: req.user.id,
       plan: selectedPlan.name,
@@ -159,12 +158,12 @@ exports.verifyPayment = async (req, res, next) => {
 
     console.log("Payment saved:", payment._id);
 
-    // 5️⃣ Calculate membership dates
+    //  Calculate membership dates
     const startDate = new Date();
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + selectedPlan.durationInDays);
 
-    // 6️⃣ Prepare member profile update
+    //  Prepare member profile update
     const updateData = {
       plan: selectedPlan.name,
       status: "ACTIVE",
@@ -172,79 +171,21 @@ exports.verifyPayment = async (req, res, next) => {
       endDate
     };
 
-    // 7️⃣ Handle trainer assignment for premium members
+    // Save preferred time slot for premium (admin will assign trainer manually)
     if (plan === "PREMIUM" && timeSlot) {
       updateData.timeSlot = timeSlot;
-
-      let trainer;
-
-      if (selectedTrainerId) {
-        // ✅ Member selected a specific trainer
-        console.log(`Attempting to assign specific trainer: ${selectedTrainerId} for slot ${timeSlot}`);
-
-        trainer = await TrainerProfile.findOneAndUpdate(
-          {
-            _id: selectedTrainerId,
-            activeStatus: true,
-            [`currentSlotMembers.${timeSlot}`]: { $lt: 5 }
-          },
-          {
-            $inc: { [`currentSlotMembers.${timeSlot}`]: 1 },
-            $push: { [`slotMembers.${timeSlot}`]: req.user.id }
-          },
-          { new: true }
-        ).populate('userId', 'name');
-
-        if (!trainer) {
-          return res.status(400).json({
-            message: "Selected trainer is no longer available in this slot. Please try another trainer or slot."
-          });
-        }
-
-        console.log(`Assigned specific trainer: ${trainer.userId?.name}`);
-      } else {
-        // 🤖 Auto-assign to any available trainer
-        console.log(`Auto-assigning trainer for slot ${timeSlot}`);
-
-        trainer = await TrainerProfile.findOneAndUpdate(
-          {
-            activeStatus: true,
-            [`currentSlotMembers.${timeSlot}`]: { $lt: 5 }
-          },
-          {
-            $inc: { [`currentSlotMembers.${timeSlot}`]: 1 },
-            $push: { [`slotMembers.${timeSlot}`]: req.user.id }
-          },
-          { new: true }
-        ).populate('userId', 'name');
-
-        if (!trainer) {
-          return res.status(400).json({
-            message: "No trainers available in this time slot. Please select another slot."
-          });
-        }
-
-        console.log(`Auto-assigned trainer: ${trainer.userId?.name}`);
-      }
-
-      if (trainer) {
-        updateData.assignedTrainerId = trainer._id;
-      }
     }
 
-    // 8️⃣ Update or create member profile
+    // Update or create member profile
     const membership = await MemberProfile.findOneAndUpdate(
       { userId: req.user.id },
       updateData,
       { upsert: true, new: true }
-    ).populate({
-      path: 'assignedTrainerId',
-      populate: { path: 'userId', select: 'name' }
-    });
+    );
 
     console.log("Membership activated:", membership._id);
 
-    // 9️⃣ Send success response
+    // Send success response
     res.json({
       message: "Payment successful. Membership activated.",
       payment: {
@@ -258,11 +199,7 @@ exports.verifyPayment = async (req, res, next) => {
         status: membership.status,
         startDate: membership.startDate,
         endDate: membership.endDate,
-        timeSlot: membership.timeSlot,
-        trainer: membership.assignedTrainerId ? {
-          id: membership.assignedTrainerId._id,
-          name: membership.assignedTrainerId.userId?.name
-        } : null
+        timeSlot: membership.timeSlot
       }
     });
 

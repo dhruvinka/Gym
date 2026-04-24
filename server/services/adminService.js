@@ -8,20 +8,19 @@ exports.addTrainer = async (data) => {
 };
 
 exports.getDashboardStats = async () => {
-  // Basic counts
   const totalMembers = await MemberProfile.countDocuments();
   const activeMembers = await MemberProfile.countDocuments({ status: "ACTIVE" });
   const expiredMembers = await MemberProfile.countDocuments({ status: "EXPIRED" });
-  
+
   // Premium vs Simple members
   const premiumMembers = await MemberProfile.countDocuments({ plan: "PREMIUM" });
   const simpleMembers = await MemberProfile.countDocuments({ plan: "SIMPLE" });
-  
+
   const totalTrainers = await TrainerProfile.countDocuments();
   const activeTrainers = await TrainerProfile.countDocuments({ activeStatus: true });
-  
+
   const totalPayments = await Payment.countDocuments({ status: "SUCCESS" });
-  const totalSchedules = 6; // Fixed: 6 time slots
+  const totalSchedules = 6;
 
   // Revenue calculation
   const revenueData = await Payment.aggregate([
@@ -35,10 +34,10 @@ exports.getDashboardStats = async () => {
   ]);
 
   const totalRevenue = revenueData.length > 0
-    ? revenueData[0].totalRevenue / 100   // Convert paise → rupees
+    ? revenueData[0].totalRevenue / 100
     : 0;
 
-  // NEW: Slot occupancy stats
+
   const trainers = await TrainerProfile.find();
   const slotStats = {
     MORNING_5_7: { current: 0, capacity: trainers.length * 5 },
@@ -60,7 +59,7 @@ exports.getDashboardStats = async () => {
   // Calculate occupancy percentages
   Object.keys(slotStats).forEach(slot => {
     slotStats[slot].available = slotStats[slot].capacity - slotStats[slot].current;
-    slotStats[slot].occupancyPercentage = 
+    slotStats[slot].occupancyPercentage =
       (slotStats[slot].current / slotStats[slot].capacity) * 100 || 0;
   });
 
@@ -77,4 +76,4 @@ exports.getDashboardStats = async () => {
     totalRevenue,
     slotOccupancy: slotStats
   };
-};
+}; 

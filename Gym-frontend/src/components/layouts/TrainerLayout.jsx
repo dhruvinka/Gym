@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  FiHome, 
-  FiCalendar, 
-  FiUsers, 
+import {
+  FiHome,
+  FiCalendar,
+  FiUsers,
   FiClipboard,
   FiLogOut,
   FiMenu,
-  FiX
+  FiX,
+  FiUser
 } from 'react-icons/fi';
 
 function TrainerLayout({ children }) {
@@ -17,15 +18,16 @@ function TrainerLayout({ children }) {
   const location = useLocation();
 
   const navigation = [
-  { name: 'Dashboard', href: '/trainer/dashboard', icon: FiHome },
-  { name: 'My Schedule', href: '/trainer/schedule', icon: FiCalendar },
-  { name: 'My Members', href: '/trainer/members', icon: FiUsers },
-  { name: 'Diet Plans', href: '/trainer/diet-plans', icon: FiClipboard },
-];
+    { name: 'Dashboard', href: '/trainer/dashboard', icon: FiHome },
+    { name: 'My Profile', href: '/trainer/profile', icon: FiUser },
+    { name: 'My Schedule', href: '/trainer/schedule', icon: FiCalendar },
+    { name: 'My Members', href: '/trainer/members', icon: FiUsers },
+    { name: 'Diet Plans', href: '/trainer/diet-plans', icon: FiClipboard },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Mobile sidebar toggle */}
+
       <div className="lg:hidden fixed top-0 left-0 right-0 z-20 bg-white shadow-md p-4">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -37,31 +39,29 @@ function TrainerLayout({ children }) {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 transition duration-200 ease-in-out z-30 w-64 bg-gray-900 text-white shadow-lg`}
+        className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } lg:translate-x-0 transition duration-200 ease-in-out z-30 w-64 bg-gray-900 text-white shadow-lg`}
       >
         <div className="p-6">
-  <h1 className="text-2xl font-bold">
-    TITAN <span className="text-yellow-400">FIT</span>
-  </h1>
-  <p className="text-sm text-gray-400 mt-1">Trainer Panel</p>
-</div>
+          <h1 className="text-2xl font-bold">
+            TITAN <span className="text-yellow-400">FIT</span>
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">Trainer Panel</p>
+        </div>
 
         <nav className="mt-6">
           {navigation.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.href;
-            
+
             return (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center px-6 py-3 text-sm font-medium transition ${
-                  isActive
-                    ? 'bg-yellow-400 text-black'
-                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                }`}
+                className={`flex items-center px-6 py-3 text-sm font-medium transition ${isActive
+                  ? 'bg-yellow-400 text-black'
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  }`}
                 onClick={() => setSidebarOpen(false)}
               >
                 <Icon className="mr-3 h-5 w-5" />
@@ -87,13 +87,7 @@ function TrainerLayout({ children }) {
         </main>
       </div>
 
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+
     </div>
   );
 }

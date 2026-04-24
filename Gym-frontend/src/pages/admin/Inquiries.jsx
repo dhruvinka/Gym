@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/layouts/AdminLayout';
 import { adminAPI } from '../../services/api';
-import { 
-  FiMessageSquare, 
-  FiMail, 
-  FiCheck, 
-  FiX, 
-  FiEye, 
-  FiSend, 
-  FiClock, 
+import {
+  FiMessageSquare,
+  FiMail,
+  FiCheck,
+  FiX,
+  FiEye,
+  FiSend,
+  FiClock,
   FiCheckCircle,
-  FiAlertCircle,
-  FiTrash2 // Add this import
+  FiTrash2
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
@@ -53,22 +52,22 @@ function Inquiries() {
     }
 
     const loadingToast = toast.loading('Sending reply...');
-    
+
     try {
       await adminAPI.respondToInquiry(selectedInquiry._id, replyText);
-      
+
       toast.dismiss(loadingToast);
       toast.success(
         <div>
           <p className="font-semibold">Reply sent successfully!</p>
           <p className="text-xs mt-1">Email sent to: {selectedInquiry.email}</p>
         </div>,
-        { 
-          icon: '✉️', 
-          duration: 5000 
+        {
+          icon: '',
+          duration: 5000
         }
       );
-      
+
       setShowReplyModal(false);
       setReplyText('');
       setSelectedInquiry(null);
@@ -81,7 +80,7 @@ function Inquiries() {
           <p className="font-semibold">Failed to send reply</p>
           <p className="text-xs mt-1">{error.response?.data?.message || 'Please try again'}</p>
         </div>,
-        { icon: '❌', duration: 4000 }
+        { icon: '', duration: 4000 }
       );
     }
   };
@@ -120,24 +119,23 @@ function Inquiries() {
   const confirmDelete = async (inquiryId, inquiryName) => {
     setDeletingId(inquiryId);
     const loadingToast = toast.loading(`Deleting inquiry from ${inquiryName}...`);
-    
+
     try {
-      // Note: You'll need to add this delete endpoint to your adminAPI
       await adminAPI.deleteInquiry(inquiryId);
-      
+
       toast.dismiss(loadingToast);
       toast.success(
         <div>
           <p className="font-semibold">Inquiry deleted successfully!</p>
           <p className="text-xs mt-1">Message from {inquiryName} has been removed</p>
         </div>,
-        { icon: '🗑️', duration: 4000 }
+        { icon: '', duration: 4000 }
       );
-      
-      // Refresh the list
+
+
       fetchInquiries();
-      
-      // Close modals if the deleted inquiry was selected
+
+
       if (selectedInquiry?._id === inquiryId) {
         setShowViewModal(false);
         setShowReplyModal(false);
@@ -151,7 +149,7 @@ function Inquiries() {
           <p className="font-semibold">Failed to delete inquiry</p>
           <p className="text-xs mt-1">{error.response?.data?.message || 'Please try again'}</p>
         </div>,
-        { icon: '❌', duration: 4000 }
+        { icon: '', duration: 4000 }
       );
     } finally {
       setDeletingId(null);
@@ -159,7 +157,7 @@ function Inquiries() {
   };
 
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'replied': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -167,7 +165,7 @@ function Inquiries() {
   };
 
   const getStatusIcon = (status) => {
-    switch(status) {
+    switch (status) {
       case 'pending': return <FiClock className="inline mr-1" size={12} />;
       case 'replied': return <FiCheckCircle className="inline mr-1" size={12} />;
       default: return null;
@@ -288,7 +286,7 @@ function Inquiries() {
                   <FiX size={24} />
                 </button>
               </div>
-              
+
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
@@ -319,7 +317,7 @@ function Inquiries() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="border-t pt-4">
                   <p className="text-xs text-gray-500 mb-2">Message</p>
                   <p className="text-gray-800 whitespace-pre-wrap">{selectedInquiry.message}</p>
@@ -389,7 +387,7 @@ function Inquiries() {
                   <FiX size={24} />
                 </button>
               </div>
-              
+
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <p className="text-sm text-gray-600 mb-2">
                   <span className="font-medium">Original Message:</span>

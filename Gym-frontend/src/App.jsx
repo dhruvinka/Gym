@@ -1,22 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./context/AuthContext";
-
-// Components
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import LoadingSpinner from "./components/common/LoadingSpinner";
-
-// Auth Pages
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import VerifyOTP from "./components/auth/VerifyOTP";
 import ForgotPassword from "./components/auth/ForgotPassword";
-import ResetPassword from "./components/auth/ResetPassword";  // ← IMPORT THIS
-
-// Landing Page
+import ResetPassword from "./components/auth/ResetPassword";
 import LandingPage from "./pages/LandingPage";
-
-// Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
 import ManageTrainers from "./pages/admin/ManageTrainers";
 import ManageSchedules from "./pages/admin/ManageSchedules";
@@ -24,15 +16,12 @@ import ManageMembers from "./pages/admin/ManageMembers";
 import AssignTrainer from "./pages/admin/AssignTrainer";
 import Payments from "./pages/admin/Payments";
 import Inquiries from "./pages/admin/Inquiries";
-
-
-// Trainer Pages
 import TrainerDashboard from "./pages/trainer/Dashboard";
 import TrainerSchedule from "./pages/trainer/MySchedule";
 import TrainerMembers from "./pages/trainer/MyMembers";
+import TrainerProfile from "./pages/trainer/MyProfile";
 import DietPlans from "./pages/trainer/DietPlans";
 import CreateDietPlan from "./pages/trainer/CreateDietPlan";
-// Member Pages
 import MemberDashboard from "./pages/member/Dashboard";
 import MemberProfile from "./pages/member/MyProfile";
 import MemberTrainer from "./pages/member/MyTrainer";
@@ -40,10 +29,7 @@ import MemberSchedule from "./pages/member/MySchedule";
 import MemberDietPlan from "./pages/member/MyDietPlan";
 import MembershipPlans from "./pages/member/MembershipPlans";
 import BillingHistory from "./pages/member/BillingHistory";
-import MyProfile from "./pages/member/MyProfile";
-import MyDietPlan from "./pages/member/MyDietPlan";
-
-
+import BMICalculator from "./pages/member/BMICalculator";
 
 function AppContent() {
   const { loading } = useAuth();
@@ -51,16 +37,17 @@ function AppContent() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <Routes>
-      {/* Public Routes */}
+    <Routes> 
+
+      {/* Public Routes*/}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-otp" element={<VerifyOTP />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />  {/* ← THIS IS CRITICAL */}
+      <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Admin Routes */}
+      {/*Admin Routes */}
       <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['ADMIN']}>
           <AdminDashboard />
@@ -71,7 +58,7 @@ function AppContent() {
           <AdminDashboard />
         </ProtectedRoute>
       } />
-            <Route path="/admin/inquiries" element={
+      <Route path="/admin/inquiries" element={
         <ProtectedRoute allowedRoles={['ADMIN']}>
           <Inquiries />
         </ProtectedRoute>
@@ -102,46 +89,20 @@ function AppContent() {
         </ProtectedRoute>
       } />
 
-      {/* Trainer Routes */}
+      {/*Trainer Routes */}
       <Route path="/trainer" element={
         <ProtectedRoute allowedRoles={['TRAINER']}>
           <TrainerDashboard />
         </ProtectedRoute>
       } />
-          <Route path="/trainer/dashboard" element={
-      <ProtectedRoute allowedRoles={['TRAINER']}>
-        <TrainerDashboard />
-      </ProtectedRoute>
-    } />
-
-    <Route path="/trainer/schedule" element={
-      <ProtectedRoute allowedRoles={['TRAINER']}>
-        <TrainerSchedule />
-      </ProtectedRoute>
-    } />
-
-    <Route path="/trainer/members" element={
-      <ProtectedRoute allowedRoles={['TRAINER']}>
-        <TrainerMembers />
-      </ProtectedRoute>
-    } />
-
-    <Route path="/trainer/diet-plans" element={
-      <ProtectedRoute allowedRoles={['TRAINER']}>
-        <DietPlans />
-      </ProtectedRoute>
-    } />
-
-    <Route path="/trainer/create-diet-plan" element={
-      <ProtectedRoute allowedRoles={['TRAINER']}>
-        <CreateDietPlan />
-      </ProtectedRoute>
-    } />
-
-
       <Route path="/trainer/dashboard" element={
         <ProtectedRoute allowedRoles={['TRAINER']}>
           <TrainerDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/trainer/profile" element={
+        <ProtectedRoute allowedRoles={['TRAINER']}>
+          <TrainerProfile />
         </ProtectedRoute>
       } />
       <Route path="/trainer/schedule" element={
@@ -165,26 +126,7 @@ function AppContent() {
         </ProtectedRoute>
       } />
 
-      {/* Member Routes */}
-
-            <Route path="/member/billing-history" element={
-        <ProtectedRoute allowedRoles={['MEMBER']}>
-          <BillingHistory />
-        </ProtectedRoute>
-      } />
-
-            <Route path="/member/profile" element={
-        <ProtectedRoute allowedRoles={['MEMBER']}>
-          <MyProfile />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/member/diet-plan" element={
-        <ProtectedRoute allowedRoles={['MEMBER']}>
-          <MyDietPlan />
-        </ProtectedRoute>
-      } />
-
+      {/*Member Routes*/}
       <Route path="/member" element={
         <ProtectedRoute allowedRoles={['MEMBER']}>
           <MemberDashboard />
@@ -215,14 +157,25 @@ function AppContent() {
           <MemberDietPlan />
         </ProtectedRoute>
       } />
+      <Route path="/member/billing-history" element={
+        <ProtectedRoute allowedRoles={['MEMBER']}>
+          <BillingHistory />
+        </ProtectedRoute>
+      } />
+      <Route path="/member/bmi-calculator" element={
+        <ProtectedRoute allowedRoles={['MEMBER']}>
+          <BMICalculator />
+        </ProtectedRoute>
+      } />
       <Route path="/plans" element={
         <ProtectedRoute allowedRoles={['MEMBER']}>
           <MembershipPlans />
         </ProtectedRoute>
       } />
 
-      {/* Catch all */}
+      {/*Catch All*/}
       <Route path="*" element={<Navigate to="/" />} />
+
     </Routes>
   );
 }

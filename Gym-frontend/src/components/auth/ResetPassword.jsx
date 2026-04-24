@@ -20,7 +20,6 @@ function ResetPassword() {
   const location = useLocation();
 
   useEffect(() => {
-    // Get token from URL query parameters
     const params = new URLSearchParams(location.search);
     const tokenParam = params.get('token');
 
@@ -39,7 +38,7 @@ function ResetPassword() {
       [name]: value
     });
 
-    // Validate password strength
+
     if (name === 'newPassword') {
       setPasswordValid({
         length: value.length >= 8
@@ -54,13 +53,12 @@ function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate passwords match
+
     if (formData.newPassword !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
 
-    // Validate password strength
     if (!validatePassword()) {
       toast.error('Please meet all password requirements');
       return;
@@ -135,12 +133,10 @@ function ResetPassword() {
         backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')"
       }}
     >
-      {/* Decorative overlay elements */}
       <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-black to-transparent"></div>
       <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black to-transparent"></div>
 
       <div className="max-w-md w-full space-y-8 bg-white/95 backdrop-blur-sm p-8 rounded-2xl shadow-2xl relative z-10 mx-4">
-        {/* Gym Logo/Brand */}
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             TITAN <span className="text-yellow-400">FIT</span>          </h1>
@@ -158,7 +154,6 @@ function ResetPassword() {
         </div>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-          {/* New Password */}
           <div>
             <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
               New Password
@@ -180,7 +175,6 @@ function ResetPassword() {
             </div>
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
               Confirm Password
@@ -202,7 +196,6 @@ function ResetPassword() {
             </div>
           </div>
 
-          {/* Password Requirements */}
           {formData.newPassword && (
             <div className="bg-gray-50 p-4 rounded-lg space-y-2">
               <p className="text-sm font-medium text-gray-700 mb-2">Password requirements:</p>
@@ -228,7 +221,6 @@ function ResetPassword() {
           </div>
         </form>
 
-        {/* Motivational Quote */}
         <div className="text-center text-sm text-gray-500 italic">
           "A new password, a renewed commitment to your fitness goals."
         </div>

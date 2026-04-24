@@ -16,7 +16,7 @@ const {
 
 const { authMiddleware } = require("../middleware/authMiddleware");
 
-//  PUBLIC ROUTES - NO MIDDLEWARE
+//  PUBLIC ROUTES
 router.post("/register", register);
 router.post("/login", login);
 router.post("/verify-otp", verifyOtp);

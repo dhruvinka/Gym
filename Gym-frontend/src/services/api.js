@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 
 const API_URL = 'http://localhost:5000/api';
 
-// List of public endpoints that don't need authentication
+//public endpoints
 const publicEndpoints = [
   '/auth/login',
   '/auth/register',
@@ -13,7 +13,6 @@ const publicEndpoints = [
   '/auth/reset-password'
 ];
 
-// Create axios instance
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -23,15 +22,15 @@ const api = axios.create({
 
 
 export const inquiryAPI = {
-  submitInquiry: (data) => api.post('/inquiry/submit', data), // This will be public
+  submitInquiry: (data) => api.post('/inquiry/submit', data),
 };
 
 export const publicAPI = {
-  getTrainers: () => api.get('/public/trainers'), // This will be public
+  getTrainers: () => api.get('/public/trainers'),
 };
 
 
-// Photo APIs (protected)
+// photo api
 export const photoAPI = {
   uploadMemberPhoto: (formData) => api.post('/photo/member/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }

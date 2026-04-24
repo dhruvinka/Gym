@@ -26,7 +26,6 @@ function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  // Email validation function
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -132,12 +131,10 @@ function Register() {
         backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')"
       }}
     >
-      {/* Decorative overlay elements */}
       <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-black to-transparent"></div>
       <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black to-transparent"></div>
 
       <div className="max-w-md w-full space-y-8 bg-white/95 backdrop-blur-sm p-8 rounded-2xl shadow-2xl relative z-10 mx-4">
-        {/* Gym Logo/Brand */}
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             TITAN <span className="text-yellow-400">FIT</span>
@@ -145,7 +142,6 @@ function Register() {
           <p className="text-gray-600">Join our fitness family today!</p>
         </div>
 
-        {/* Sign In Link - MOVED OUTSIDE THE FORM */}
         <div className="text-right mb-2">
           <Link
             to="/login"
@@ -156,7 +152,6 @@ function Register() {
         </div>
 
         <form className="mt-2 space-y-4" onSubmit={handleSubmit}>
-          {/* Name Field */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Full Name
@@ -173,12 +168,11 @@ function Register() {
                 value={formData.name}
                 onChange={handleChange}
                 className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                placeholder="John Doe"
+                placeholder="Enter Your Name"
               />
             </div>
           </div>
 
-          {/* Email Field */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email address
@@ -197,12 +191,12 @@ function Register() {
                 onChange={handleChange}
                 onBlur={() => handleBlur('email')}
                 className={`appearance-none block w-full pl-10 px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent ${touched.email && emailError
-                    ? 'border-red-500 bg-red-50'
-                    : touched.email && !emailError && formData.email
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-300'
+                  ? 'border-red-500 bg-red-50'
+                  : touched.email && !emailError && formData.email
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-gray-300'
                   }`}
-                placeholder="you@example.com"
+                placeholder="Enter Your Email"
               />
             </div>
             {touched.email && emailError && (
@@ -210,7 +204,7 @@ function Register() {
             )}
           </div>
 
-          {/* Password Field */}
+
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
@@ -228,16 +222,16 @@ function Register() {
                 onChange={handleChange}
                 onBlur={() => handleBlur('password')}
                 className={`appearance-none block w-full pl-10 px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent ${touched.password && !isPasswordValid() && formData.password
-                    ? 'border-red-500 bg-red-50'
-                    : touched.password && isPasswordValid()
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-300'
+                  ? 'border-red-500 bg-red-50'
+                  : touched.password && isPasswordValid()
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-gray-300'
                   }`}
                 placeholder="••••••••"
               />
             </div>
 
-            {/* Password Requirements */}
+
             {touched.password && formData.password && (
               <div className="mt-2 bg-gray-50 p-2 rounded-md space-y-1">
                 <PasswordRequirement valid={passwordValid.length} text="8+ characters" />
@@ -245,7 +239,6 @@ function Register() {
             )}
           </div>
 
-          {/* Confirm Password Field */}
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
               Confirm Password
@@ -263,10 +256,10 @@ function Register() {
                 onChange={handleChange}
                 onBlur={() => handleBlur('confirmPassword')}
                 className={`appearance-none block w-full pl-10 px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent ${touched.confirmPassword && formData.confirmPassword
-                    ? formData.password === formData.confirmPassword
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-red-500 bg-red-50'
-                    : 'border-gray-300'
+                  ? formData.password === formData.confirmPassword
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-red-500 bg-red-50'
+                  : 'border-gray-300'
                   }`}
                 placeholder="••••••••"
               />
@@ -291,7 +284,7 @@ function Register() {
           </div>
         </form>
 
-        {/* Motivational Quote */}
+
         <div className="text-center text-sm text-gray-500 italic border-t pt-4">
           "Your journey to a stronger, healthier you starts here."
         </div>

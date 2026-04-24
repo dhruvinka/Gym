@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  FiHome, 
-  FiUsers, 
-  FiCalendar, 
-  FiUserCheck, 
+import {
+  FiHome,
+  FiUsers,
+  FiCalendar,
+  FiUserCheck,
   FiLogOut,
   FiMenu,
   FiX,
-  FiMessageSquare // Add this for contact inquiries icon
+  FiMessageSquare
 } from 'react-icons/fi';
 
 function AdminLayout({ children }) {
@@ -23,21 +23,20 @@ function AdminLayout({ children }) {
     { name: 'Slot Management', href: '/admin/schedules', icon: FiCalendar },
     { name: 'Members', href: '/admin/members', icon: FiUserCheck },
     { name: 'Assign Trainer', href: '/admin/assign-trainer', icon: FiUsers },
-    { 
-      name: 'Payments', 
-      href: '/admin/payments', 
+    {
+      name: 'Payments',
+      href: '/admin/payments',
       icon: () => <span className="text-lg font-semibold">₹</span>
     },
-    { 
-      name: 'Contact Inquiries', 
-      href: '/admin/inquiries', 
-      icon: FiMessageSquare 
-    }, // ✅ New option for contact inquiries
+    {
+      name: 'Contact Inquiries',
+      href: '/admin/inquiries',
+      icon: FiMessageSquare
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Mobile sidebar toggle */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-20 bg-white shadow-md p-4">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -49,9 +48,8 @@ function AdminLayout({ children }) {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 transition duration-200 ease-in-out z-30 w-64 bg-gray-900 text-white shadow-lg`}
+        className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } lg:translate-x-0 transition duration-200 ease-in-out z-30 w-64 bg-gray-900 text-white shadow-lg`}
       >
         <div className="p-6">
           <h1 className="text-2xl font-bold">
@@ -64,16 +62,15 @@ function AdminLayout({ children }) {
           {navigation.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.href;
-            
+
             return (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center px-6 py-3 text-sm font-medium transition ${
-                  isActive
+                className={`flex items-center px-6 py-3 text-sm font-medium transition ${isActive
                     ? 'bg-yellow-400 text-black'
                     : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                }`}
+                  }`}
                 onClick={() => setSidebarOpen(false)}
               >
                 <span className="mr-3 h-5 w-5 flex items-center justify-center">
@@ -101,13 +98,7 @@ function AdminLayout({ children }) {
         </main>
       </div>
 
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+
     </div>
   );
 }

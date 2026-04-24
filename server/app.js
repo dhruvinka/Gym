@@ -36,7 +36,6 @@ app.use("/api/payment", authMiddleware, paymentRoutes);
 app.use("/api/photo", authMiddleware, photoRoutes);
 
 
-// Global error handler (always last)
 app.use(errorHandler);
 
 module.exports = app;

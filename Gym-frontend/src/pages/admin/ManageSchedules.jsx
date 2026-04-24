@@ -37,16 +37,16 @@ function ManageSchedules() {
 
   const fetchData = async () => {
     const loadingToast = toast.loading('Loading schedule data...');
-    
+
     try {
       // Fetch all available slots data
       const slotsRes = await adminAPI.getAllAvailableSlots();
       setSlotData(slotsRes.data);
-      
+
       // Fetch all trainers
       const trainersRes = await adminAPI.getTrainers();
       setTrainers(trainersRes.data.filter(t => t.activeStatus));
-      
+
       toast.dismiss(loadingToast);
       toast.success('Schedule data loaded successfully', {
         icon: <FiCheckCircle className="text-green-500" />,
@@ -67,21 +67,21 @@ function ManageSchedules() {
 
   const fetchTrainerSlotDetails = async () => {
     if (!selectedTrainer) return;
-    
+
     setFetchingTrainerSlots(true);
     const loadingToast = toast.loading(`Loading details for selected trainer...`);
-    
+
     try {
       // Fetch trainer details
       const trainerInfo = trainers.find(t => t._id === selectedTrainer);
       setSelectedTrainerInfo(trainerInfo);
-      
+
       // Fetch trainer's available slots
       const response = await adminAPI.getTrainerAvailableSlots(selectedTrainer);
       setTrainerSlots(response.data.slots);
-      
+
       toast.dismiss(loadingToast);
-      
+
     } catch (error) {
       toast.dismiss(loadingToast);
       console.error('Failed to fetch trainer slots', error);
@@ -108,7 +108,7 @@ function ManageSchedules() {
 
   const showSlotInfo = (slot) => {
     const slotInfo = slotData?.slots[slot.id];
-    
+
     toast(
       <div className="p-2 max-w-sm">
         <h3 className="font-bold text-lg mb-2">{slot.label}</h3>
@@ -168,8 +168,18 @@ function ManageSchedules() {
         {selectedTrainerInfo && (
           <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg shadow-lg p-6 mb-8 text-white">
             <div className="flex items-center gap-4">
-              <div className="bg-white bg-opacity-20 p-4 rounded-full">
-                <FiUser className="text-3xl" />
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white border-opacity-50 flex-shrink-0">
+                {selectedTrainerInfo.profilePhoto?.url ? (
+                  <img
+                    src={selectedTrainerInfo.profilePhoto.url}
+                    alt={selectedTrainerInfo.userId?.name || 'Trainer'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-white bg-opacity-20 flex items-center justify-center">
+                    <FiUser className="text-2xl text-white" />
+                  </div>
+                )}
               </div>
               <div>
                 <h2 className="text-2xl font-bold">{selectedTrainerInfo.userId?.name}</h2>
@@ -193,7 +203,7 @@ function ManageSchedules() {
                 <h2 className="text-2xl font-semibold mb-6">
                   {fetchingTrainerSlots ? 'Loading...' : `${selectedTrainerInfo?.userId?.name}'s Slot Details`}
                 </h2>
-                
+
                 {fetchingTrainerSlots ? (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto"></div>
@@ -204,13 +214,12 @@ function ManageSchedules() {
                       <div key={slot.value} className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-yellow-400">
                         <div className="flex justify-between items-start mb-4">
                           <h3 className="font-semibold text-gray-800">{slot.label}</h3>
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            slot.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${slot.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
                             {slot.isAvailable ? 'Available' : 'Full'}
                           </span>
                         </div>
-                        
+
                         <div className="space-y-3">
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Current Members:</span>
@@ -226,10 +235,10 @@ function ManageSchedules() {
                               {slot.availableSpots}
                             </span>
                           </div>
-                          
+
                           <div className="mt-2">
                             <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div 
+                              <div
                                 className={`h-2 rounded-full ${getSlotOccupancyColor(slot.currentMembers, slot.capacity)}`}
                                 style={{ width: `${(slot.currentMembers / slot.capacity) * 100}%` }}
                               ></div>
@@ -264,7 +273,7 @@ function ManageSchedules() {
                       <FiClock className="text-2xl text-yellow-400" />
                       <h2 className="text-xl font-semibold">{slot.label}</h2>
                     </div>
-                    
+
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Total Capacity:</span>
@@ -280,13 +289,13 @@ function ManageSchedules() {
                           {slotData?.slots[slot.id]?.availableSpots || 0}
                         </span>
                       </div>
-                      
+
                       <div className="mt-4">
                         <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
+                          <div
                             className="bg-yellow-400 h-2 rounded-full"
-                            style={{ 
-                              width: `${((slotData?.slots[slot.id]?.currentMembers || 0) / (slotData?.slots[slot.id]?.totalCapacity || 1)) * 100}%` 
+                            style={{
+                              width: `${((slotData?.slots[slot.id]?.currentMembers || 0) / (slotData?.slots[slot.id]?.totalCapacity || 1)) * 100}%`
                             }}
                           ></div>
                         </div>

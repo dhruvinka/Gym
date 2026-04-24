@@ -80,7 +80,7 @@ exports.assignTrainer = async (req, res, next) => {
 
     await trainer.save();
 
-    // Update member - assign trainer and time slot (for entire membership duration)
+    // Update member - assign trainer and time slot
     member.assignedTrainerId = trainerId;
     member.timeSlot = timeSlot;
     await member.save();
@@ -106,7 +106,7 @@ exports.assignTrainer = async (req, res, next) => {
 };
 
 
-// NEW: GET AVAILABLE TIME SLOTS FOR A TRAINER
+// GET AVAILABLE TIME SLOTS FOR A TRAINER
 
 exports.getTrainerAvailableSlots = async (req, res, next) => {
   try {
@@ -146,8 +146,7 @@ exports.getTrainerAvailableSlots = async (req, res, next) => {
 };
 
 
-// NEW: GET ALL AVAILABLE SLOTS ACROSS ALL TRAINERS
-
+// GET ALL AVAILABLE SLOTS ACROSS ALL TRAINERS
 exports.getAllAvailableSlots = async (req, res, next) => {
   try {
     const activeTrainers = await TrainerProfile.find({ activeStatus: true })
@@ -199,11 +198,11 @@ exports.getAllAvailableSlots = async (req, res, next) => {
 };
 
 
-// NEW: REASSIGN MEMBER TO DIFFERENT TIME SLOT
+// REASSIGN MEMBER TO DIFFERENT TIME SLOT (or different trainer)
 
 exports.reassignMemberSlot = async (req, res, next) => {
   try {
-    const { memberId, newTimeSlot } = req.body;
+    const { memberId, newTimeSlot, trainerId: newTrainerId } = req.body;
 
     // Validate new time slot
     if (!TIME_SLOTS[newTimeSlot]) {
@@ -221,42 +220,76 @@ exports.reassignMemberSlot = async (req, res, next) => {
     }
 
     const oldTimeSlot = member.timeSlot;
-    const trainerId = member.assignedTrainerId;
+    const oldTrainerId = member.assignedTrainerId;
 
-    // Get trainer
-    const trainer = await TrainerProfile.findById(trainerId);
-    if (!trainer) {
-      return res.status(404).json({ message: "Trainer not found" });
+    // Determine if we are switching to a different trainer
+    const isSwitchingTrainer = newTrainerId && newTrainerId.toString() !== oldTrainerId.toString();
+
+    // Get old trainer
+    const oldTrainer = await TrainerProfile.findById(oldTrainerId);
+    if (!oldTrainer) {
+      return res.status(404).json({ message: "Current trainer not found" });
     }
 
-    // Check if new slot has capacity
-    const currentInNewSlot = trainer.currentSlotMembers?.[newTimeSlot] || 0;
+    // If switching trainer, validate and load new trainer
+    let newTrainer = oldTrainer;
+    if (isSwitchingTrainer) {
+      newTrainer = await TrainerProfile.findById(newTrainerId);
+      if (!newTrainer || !newTrainer.activeStatus) {
+        return res.status(404).json({ message: "New trainer not found or inactive" });
+      }
+    }
+
+    // Check capacity on the target trainer for the new slot
+    const currentInNewSlot = newTrainer.currentSlotMembers?.[newTimeSlot] || 0;
     if (currentInNewSlot >= 5) {
       return res.status(400).json({
-        message: `New time slot ${TIME_SLOTS[newTimeSlot].label} is full`
+        message: `New time slot ${TIME_SLOTS[newTimeSlot].label} is full for the selected trainer`
       });
     }
 
-    // Remove from old slot
-    if (oldTimeSlot) {
-      trainer.currentSlotMembers[oldTimeSlot] = (trainer.currentSlotMembers[oldTimeSlot] || 1) - 1;
-      trainer.slotMembers[oldTimeSlot] = (trainer.slotMembers[oldTimeSlot] || [])
-        .filter(id => id.toString() !== memberId);
+    if (isSwitchingTrainer) {
+      // --- Remove from old trainer's old slot ---
+      if (oldTimeSlot) {
+        oldTrainer.currentSlotMembers[oldTimeSlot] = Math.max(0, (oldTrainer.currentSlotMembers[oldTimeSlot] || 1) - 1);
+        oldTrainer.slotMembers[oldTimeSlot] = (oldTrainer.slotMembers[oldTimeSlot] || [])
+          .filter(id => id.toString() !== memberId.toString());
+        oldTrainer.markModified('currentSlotMembers');
+        oldTrainer.markModified('slotMembers');
+        await oldTrainer.save();
+      }
+
+      // --- Add to new trainer's new slot ---
+      newTrainer.currentSlotMembers[newTimeSlot] = (newTrainer.currentSlotMembers[newTimeSlot] || 0) + 1;
+      newTrainer.slotMembers[newTimeSlot] = newTrainer.slotMembers[newTimeSlot] || [];
+      newTrainer.slotMembers[newTimeSlot].push(memberId);
+      newTrainer.markModified('currentSlotMembers');
+      newTrainer.markModified('slotMembers');
+      await newTrainer.save();
+    } else {
+      // Same trainer — just move between slots
+      if (oldTimeSlot) {
+        oldTrainer.currentSlotMembers[oldTimeSlot] = Math.max(0, (oldTrainer.currentSlotMembers[oldTimeSlot] || 1) - 1);
+        oldTrainer.slotMembers[oldTimeSlot] = (oldTrainer.slotMembers[oldTimeSlot] || [])
+          .filter(id => id.toString() !== memberId.toString());
+      }
+      oldTrainer.currentSlotMembers[newTimeSlot] = (oldTrainer.currentSlotMembers[newTimeSlot] || 0) + 1;
+      oldTrainer.slotMembers[newTimeSlot] = oldTrainer.slotMembers[newTimeSlot] || [];
+      oldTrainer.slotMembers[newTimeSlot].push(memberId);
+      oldTrainer.markModified('currentSlotMembers');
+      oldTrainer.markModified('slotMembers');
+      await oldTrainer.save();
     }
 
-    // Add to new slot
-    trainer.currentSlotMembers[newTimeSlot] = (trainer.currentSlotMembers[newTimeSlot] || 0) + 1;
-    trainer.slotMembers[newTimeSlot] = trainer.slotMembers[newTimeSlot] || [];
-    trainer.slotMembers[newTimeSlot].push(memberId);
-
-    await trainer.save();
-
-    // Update member
+    // Update member record
     member.timeSlot = newTimeSlot;
+    if (isSwitchingTrainer) {
+      member.assignedTrainerId = newTrainerId;
+    }
     await member.save();
 
     res.json({
-      message: `Member reassigned from ${oldTimeSlot} to ${newTimeSlot}`,
+      message: `Member reassigned to ${TIME_SLOTS[newTimeSlot].label}${isSwitchingTrainer ? ' with new trainer' : ''}`,
       member: {
         id: member._id,
         timeSlot: member.timeSlot,
@@ -353,7 +386,7 @@ exports.respondToInquiry = async (req, res, next) => {
   }
 };
 
-// SUBMIT INQUIRY (for public contact form)
+// SUBMIT INQUIRY 
 exports.submitInquiry = async (req, res, next) => {
   try {
     const { name, email, message } = req.body;
@@ -481,21 +514,41 @@ exports.getAllTrainers = async (req, res, next) => {
   }
 };
 
-// UPDATE TRAINER (unchanged)
+// UPDATE TRAINER
 exports.updateTrainer = async (req, res, next) => {
   try {
+    const { name, specialization, experience, activeStatus } = req.body;
+
+    // Find the trainer profile first to get the linked userId
+    const trainer = await TrainerProfile.findById(req.params.trainerId);
+    if (!trainer) {
+      return res.status(404).json({ message: "Trainer not found" });
+    }
+
+    // Update name on the User document if provided
+    if (name && trainer.userId) {
+      await User.findByIdAndUpdate(trainer.userId, { name });
+    }
+
+    // Build update object for TrainerProfile (only relevant fields)
+    const profileUpdate = {};
+    if (specialization !== undefined) profileUpdate.specialization = specialization;
+    if (experience !== undefined) profileUpdate.experience = experience;
+    if (activeStatus !== undefined) profileUpdate.activeStatus = activeStatus;
+
     const updated = await TrainerProfile.findByIdAndUpdate(
       req.params.trainerId,
-      req.body,
+      profileUpdate,
       { new: true }
-    );
+    ).populate("userId", "name email");
+
     res.json(updated);
   } catch (error) {
     next(error);
   }
 };
 
-// DELETE TRAINER (updated to handle member reassignment)
+// DELETE TRAINER
 exports.deleteTrainer = async (req, res, next) => {
   try {
     const trainer = await TrainerProfile.findById(req.params.trainerId);
@@ -529,7 +582,7 @@ exports.deleteTrainer = async (req, res, next) => {
 
 
 
-// GET MEMBERS (with slot info)
+// GET MEMBERS
 
 exports.getAllMembers = async (req, res, next) => {
   try {
@@ -555,7 +608,7 @@ exports.getAllMembers = async (req, res, next) => {
   }
 };
 
-// UPDATE MEMBER STATUS (updated to handle trainer unassignment on expiry)
+// UPDATE MEMBER STATUS
 exports.updateMemberStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
